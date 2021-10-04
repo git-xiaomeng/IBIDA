@@ -13,7 +13,7 @@ pacman::p_load(Seurat, magrittr, dplyr, cowplot, patchwork, tidyverse)
 
 setwd(data_dir)
 barcodesfile <- "GSE140228_UMI_counts_Droplet_barcodes.tsv" 
-genesfile <- "GSE140228_UMI_counts_Droplet_genes_modified.tsv"
+genesfile <- "GSE140228_UMI_counts_Droplet_genes.tsv"
 mtxfile <- "GSE140228_UMI_counts_Droplet.mtx" 
 
 dir.create("10X files for Read10X")
