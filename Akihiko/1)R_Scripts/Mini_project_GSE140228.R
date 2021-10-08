@@ -44,6 +44,14 @@ rm(genesfile)
 
 #Read data using Read10X====
 expression_matrix <- Read10X(data.dir = data_dir)
+ 
+#Sampling
+cell_names <-  colnames(expression_matrix)
+sampling_number <-  10000
+sampling_cell_names <-  sample(cell_names, sampling_number)
+expression_matrix <-  expression_matrix[, sampling_cell_names, drop = F]
+
+rm(cell_names, sampling_number, sampling_cell_names)
 
 #Inspect the data
 dim(expression_matrix)
@@ -92,6 +100,12 @@ seurat_object <- subset(seurat_object, subset = nFeature_RNA > 200 & nFeature_RN
 
 #LogNormalize
 seurat_object <- NormalizeData(seurat_object)
+ 
+###Question###
+# We are interested in only immune cells.
+# Would it be more accurate clustering if only immune cells were analyzed?
+# Is it possible to exclude PTPRC (CD45)-negative non-immune cells 
+# before FindVariableFeatures, before PCA, or before clustering (FindClusters)?
 
 #Save Data_"01_Bef_feature_selection"====
 setwd(proj_dir)
@@ -101,7 +115,7 @@ seurat_object <- readRDS(file = "./3)Results/01_Bef_feature_selection.rds")
 #Section 02_Standard processing_Feature selection====
 seurat_object <- FindVariableFeatures(seurat_object, 
                                       selection.method = "vst", 
-                                      nfeatures = 4000) #defaultは2000
+                                      nfeatures = 4000) #default is 2000
 
 # Identify the 10 most highly variable genes
 top10 <- VariableFeatures(seurat_object)[1:10]
@@ -129,6 +143,9 @@ rm(plot1, plot2, variable_features, top10)
 seurat_object <- ScaleData(seurat_object)
 
 #PCA on scaled data
+#By default, only the previously determined variable features are used as input.
+#You can run it on your own choice of features,but they must be in the scaled data assay
+
 seurat_object <- RunPCA(seurat_object)
 
 DimHeatmap(seurat_object, dims = 1:15, cells = 500, balanced = TRUE, combine = FALSE)
@@ -209,6 +226,8 @@ load("./3)Results/05_Bef_FindClusters.Rdata")
 seurat_object <- FindNeighbors(seurat_object, dims = selected_dims)
 
 res.examined <- c(3.0, 2.0, 1.0, 0.5) #resolutions to be tested
+# Usually use res=0.1 for 1M cells and res=0.8 for 10 thousand cells
+
 seurat_object <- FindClusters(seurat_object, resolution = res.examined)
 
 #TSNE plot with clustering
