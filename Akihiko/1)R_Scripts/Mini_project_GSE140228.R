@@ -1,4 +1,4 @@
-#Daily setup==== 
+#Daily setup====     
 proj_dir <- "/Users/kichu/Documents/Bioinformatics/Bioinfo_course_Akihiko/Akihiko" 
 data_dir <- "/Users/kichu/Documents/Bioinformatics/Bioinfo_course_Akihiko/Akihiko/2)Data"
 
