@@ -116,7 +116,7 @@ seurat_object <- readRDS(file = "./3)Results/01_Bef_feature_selection.rds")
 seurat_object <- FindVariableFeatures(seurat_object, 
                                       selection.method = "vst", 
                                       nfeatures = 4000) #default is 2000
-
+ 
 # Identify the 10 most highly variable genes
 top10 <- VariableFeatures(seurat_object)[1:10]
 
@@ -212,7 +212,7 @@ selected_dims = 1:15
 #Run tSNE and UMAP====
 seurat_object <- RunTSNE(seurat_object, dims = selected_dims)
 seurat_object <- RunUMAP(seurat_object, dims = selected_dims)
-
+ 
 #Save Data_"05_Bef_FindClusters"====
 setwd(proj_dir)
 save(seurat_object, data_dir, proj_dir, selected_dims, file = 
