@@ -1,6 +1,6 @@
-#Daily setup==== 
-proj_dir <- "/Users/kichu/Documents/Bioinformatics/Bioinfo_course_AK/Akihiko" 
-data_dir <- "/Users/kichu/Documents/Bioinformatics/Bioinfo_course_AK/Akihiko/2)Data"
+#Daily setup====     
+proj_dir <- "/Users/kichu/Documents/Bioinformatics/Bioinfo_course_Akihiko/Akihiko" 
+data_dir <- "/Users/kichu/Documents/Bioinformatics/Bioinfo_course_Akihiko/Akihiko/2)Data"
 
 pacman::p_load(Seurat, magrittr, dplyr, cowplot, patchwork, tidyverse)
 
@@ -116,7 +116,7 @@ seurat_object <- readRDS(file = "./3)Results/01_Bef_feature_selection.rds")
 seurat_object <- FindVariableFeatures(seurat_object, 
                                       selection.method = "vst", 
                                       nfeatures = 4000) #default is 2000
-
+ 
 # Identify the 10 most highly variable genes
 top10 <- VariableFeatures(seurat_object)[1:10]
 
@@ -134,13 +134,10 @@ rm(plot1, plot2, variable_features, top10)
 #Section 03_PCA====
 
 #Scaling for all genes
-#seurat_object <- ScaleData(seurat_object, features = rownames(seurat_object))
-#Error: vector memory exhausted (limit reached?)
-###Question###
-#Approximately how much memory is needed for this?
+seurat_object <- ScaleData(seurat_object, features = rownames(seurat_object))
 
-#Scaling for previously determined variable features (4,000 at this time)
-seurat_object <- ScaleData(seurat_object)
+#Scaling for previously determined variable features (default: 2000)
+#seurat_object <- ScaleData(seurat_object)
 
 #PCA on scaled data
 #By default, only the previously determined variable features are used as input.
@@ -159,8 +156,8 @@ saveRDS(object = seurat_object, file = "./3)Results/03_Aft_PCA.rds")
 seurat_object <- readRDS(file = "./3)Results/03_Aft_PCA.rds")
 
 #Section 04_Jackstraw_To estimate the significance of each PC====
-seurat_object <- JackStraw(seurat_object, num.replicate = 80) 
-  #num.replicate = 100 resulted in Error (session aborted)
+seurat_object <- JackStraw(seurat_object, num.replicate = 100) 
+  #num.replicate = 100 resulted in Error (session aborted) when all cells were analyzed
 
 seurat_object <- ScoreJackStraw(seurat_object, dims = 1:20)
 
@@ -215,7 +212,7 @@ selected_dims = 1:15
 #Run tSNE and UMAP====
 seurat_object <- RunTSNE(seurat_object, dims = selected_dims)
 seurat_object <- RunUMAP(seurat_object, dims = selected_dims)
-
+ 
 #Save Data_"05_Bef_FindClusters"====
 setwd(proj_dir)
 save(seurat_object, data_dir, proj_dir, selected_dims, file = 
@@ -225,7 +222,7 @@ load("./3)Results/05_Bef_FindClusters.Rdata")
 #Section 06_Clustering at various resolutions====
 seurat_object <- FindNeighbors(seurat_object, dims = selected_dims)
 
-res.examined <- c(3.0, 2.0, 1.0, 0.5) #resolutions to be tested
+res.examined <- c(1.2, 1.0, 0.8, 0.6) #resolutions to be tested
 # Usually use res=0.1 for 1M cells and res=0.8 for 10 thousand cells
 
 seurat_object <- FindClusters(seurat_object, resolution = res.examined)
